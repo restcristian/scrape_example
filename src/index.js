@@ -53,7 +53,7 @@ app.post("/link", async (_, res) => {
   // Navigate the page to a URL
   await page.goto(SEARLY_URL);
   // Wait for Searly to parse the URL
-  await new Promise(r => setTimeout(r, 5000))
+  await page.waitForNavigation()
   const currentUrl = page.url()
   // Close the session
   await browser.close();
