@@ -5,9 +5,10 @@ const app = express();
 const PORT = 5555;
 const URL = `http://localhost:${PORT}`;
 // We could get this URL from the client as well.
-// const OFFER_URL = "https://goodbed.com/!/beyd4";
-const OFFER_URL = "https://goodbed.com/!/bftk4";
-
+// const OFFER_URL = "https://goodbed.com/!/8jv24";
+// const OFFER_URL = "https://goodbed.com/!/bftk4";
+// const OFFER_URL = "https://goodbed.com/!/8suda";
+const OFFER_URL = "https://goodbed.com/!/pfrft";
 
 const frontendTemplate = `
 <!DOCTYPE html>
@@ -35,6 +36,7 @@ const frontendTemplate = `
           console.log(response)
           button.innerText = "Completed"
           // window.location.href = response.currentUrl 
+          window.open(response.currentUrl, '__blank')
         })
       }
     </script>
@@ -48,7 +50,8 @@ app.get("/", (_, res) => {
   res.send(frontendTemplate);
 });
 
-app.post("/link", async (_, res) => {
+app.post("/link", async (req, res) => {
+  console.log({ req });
   // Launch the browser and open a new blank page with no session
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
@@ -56,17 +59,19 @@ app.post("/link", async (_, res) => {
   await page.setExtraHTTPHeaders({
     // 'Cookie': 'brwsr=ec1c7913-2fbc-11ee-9479-d1d54e80128e; irld=LQ48U7x0dP1Wzxu4Uqd09ZRL036pVCcz7s1uezwbTkS2ZAWS2'
     //TODO: Maybe we should get this from the client itself?
-    'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36'
-  })
+    Referer: OFFER_URL,
+    "User-Agent":
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36",
+  });
   await page.goto(OFFER_URL);
   // Wait for Searly to parse the URL
-  await page.waitForNavigation()
-  const currentUrl = page.url()
+  await page.waitForNavigation({ timeout: 60000 });
+  const currentUrl = page.url();
   // Close the session
   await browser.close();
   // Return parsed URL
   await res.json({
-    currentUrl
+    currentUrl,
   });
 });
 
