@@ -5,7 +5,9 @@ const app = express();
 const PORT = 5555;
 const URL = `http://localhost:${PORT}`;
 // We could get this URL from the client as well.
-const SEARLY_URL = "https://goodbed.com/!/bftk4";
+// const OFFER_URL = "https://goodbed.com/!/beyd4";
+const OFFER_URL = "https://goodbed.com/!/bftk4";
+
 
 const frontendTemplate = `
 <!DOCTYPE html>
@@ -32,7 +34,7 @@ const frontendTemplate = `
         .then(response => {
           console.log(response)
           button.innerText = "Completed"
-          window.location.href = response.currentUrl 
+          // window.location.href = response.currentUrl 
         })
       }
     </script>
@@ -51,7 +53,12 @@ app.post("/link", async (_, res) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   // Navigate the page to a URL
-  await page.goto(SEARLY_URL);
+  await page.setExtraHTTPHeaders({
+    // 'Cookie': 'brwsr=ec1c7913-2fbc-11ee-9479-d1d54e80128e; irld=LQ48U7x0dP1Wzxu4Uqd09ZRL036pVCcz7s1uezwbTkS2ZAWS2'
+    //TODO: Maybe we should get this from the client itself?
+    'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36'
+  })
+  await page.goto(OFFER_URL);
   // Wait for Searly to parse the URL
   await page.waitForNavigation()
   const currentUrl = page.url()
